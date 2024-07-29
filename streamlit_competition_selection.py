@@ -12,11 +12,11 @@ match_id_list = []
 matches_dict = {}
 
 
-def league_infos():
+# def league_infos():
     # st.text("Bundesliga 2015/2016 --> competition id: 9, season id:27")
     # st.text("La Liga 2015/2016 --> competition id: 11, season id:27")
-    st.text("Euro Cup 2024 --> competition id: 55, season id:282")
-    st.text("Copa America 2024 --> competition id: 223, season id:282")
+    # st.text("Euro Cup 2024 --> competition id: 55, season id:282")
+    # st.text("Copa America 2024 --> competition id: 223, season id:282")
 
 
 def initialize_session_state():
@@ -32,14 +32,22 @@ def initialize_session_state():
 
 def user_input_form():
     with st.form("input_form"):
-        competition_id_input = st.number_input("competition id: ", value=55)
-        season_id_input = st.number_input("season id: ", value=282)
+        league_list = ['Euro Cup 2024', 'Copa America 2024']
+
+        league_selection = st.selectbox("Select a competition:", league_list)
+        # competition_id_input = st.number_input("competition id: ", value=55)
+        # season_id_input = st.number_input("season id: ", value=282)
         competition_submitted = st.form_submit_button("Submit competition")
 
     if competition_submitted:
-        st.session_state.competition_id_input = competition_id_input
-        st.session_state.season_id_input = season_id_input
-        st.session_state.step = 2
+        if league_selection == 'Euro Cup 2024':
+            st.session_state.competition_id_input = 55
+            st.session_state.season_id_input = 282
+            st.session_state.step = 2
+        elif league_selection == 'Euro Cup 2024':
+            st.session_state.competition_id_input = 223
+            st.session_state.season_id_input = 282
+            st.session_state.step = 2
         st.rerun()
 
 
@@ -111,7 +119,7 @@ def reset_button():
 
 
 def main(selection):
-    league_infos()
+    # league_infos()
 
     if selection == "Pass to xG":
         st.title("Pass & Xg Creation Chart")
