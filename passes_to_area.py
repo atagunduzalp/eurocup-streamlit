@@ -57,7 +57,12 @@ def calculate_area_percentages(passes, player_name):
 def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
     # Create a football pitch
     pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white', stripe=False)
-    fig, ax = pitch.draw(figsize=(10, 7))
+    fig, ax = pitch.draw(figsize=(12, 8))
+
+    norm = plt.Normalize(area_counts.min(), area_counts.max())
+
+    # Create a colormap (single color gradient)
+    cmap = cm.coolwarm
 
     # Sort areas by percentage
     sorted_areas = area_counts.sort_values()
@@ -72,12 +77,7 @@ def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
             area_index = i + j * 3
             if area_index in area_counts.index:
                 percentage = area_counts[area_index]
-                if area_index in best_3:
-                    color = 'lightblue'
-                elif area_index in worst_3:
-                    color = 'violet'
-                else:
-                    color = 'orange'
+                color = cmap(norm(percentage))
             else:
                 percentage = 0.0
                 color = 'none'
@@ -90,7 +90,7 @@ def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
 
             # Draw the area rectangle with color
             rect = plt.Rectangle((x_left, y_bottom), x_right - x_left, y_top - y_bottom,
-                                 linewidth=1, edgecolor='white', facecolor=color, linestyle='--')
+                                 linewidth=1, edgecolor='white', facecolor=color, linestyle='--', alpha=0.5)
             ax.add_patch(rect)
 
             # Annotate the percentage inside the rectangle
@@ -109,7 +109,7 @@ def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
     ax.annotate('', xy=(120, 40), xytext=(0, 40),
                 arrowprops=dict(facecolor='red', shrink=0.05, width=2, headwidth=10, headlength=10),
                 fontsize=12, ha='center', va='center', zorder=4)
-
+    plt.tight_layout()
 
     # plt.title('Percentage of Passes Received in Each Area')
     plt.show()
