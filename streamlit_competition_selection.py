@@ -44,7 +44,7 @@ def user_input_form():
             st.session_state.competition_id_input = 55
             st.session_state.season_id_input = 282
             st.session_state.step = 2
-        elif league_selection == 'Euro Cup 2024':
+        elif league_selection == 'Copa America 2024':
             st.session_state.competition_id_input = 223
             st.session_state.season_id_input = 282
             st.session_state.step = 2

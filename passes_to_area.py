@@ -38,7 +38,9 @@ def calculate_area_percentages(passes, player_name):
     pitch_width = 80
 
     # Extract end locations of the passes
-    passes[['x_end', 'y_end']] = pd.DataFrame(passes['pass_end_location'].tolist(), index=passes.index)
+    pass_end_location = pd.DataFrame(passes['pass_end_location'].tolist(), index=passes.index,
+                                     columns=['x_end', 'y_end'])
+    passes = pd.concat([passes, pass_end_location], axis=1)
 
     # Determine which area each pass ends in
     bins_x = np.linspace(0, pitch_length, 4)  # 3 vertical divisions
