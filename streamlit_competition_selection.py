@@ -1,10 +1,6 @@
 from statsbombpy import sb
-import pandas as pd
 import streamlit as st
 import pass_to_xg
-import pass_viz
-import pass_map
-import all_passes_on_the_pitch
 import passes_to_area
 
 

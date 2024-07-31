@@ -5,8 +5,6 @@ from mplsoccer import Pitch
 import numpy as np
 import streamlit as st
 from matplotlib import cm
-from matplotlib.colors import Normalize
-from matplotlib.colors import ListedColormap, BoundaryNorm
 
 
 def get_passes(match_id_list, player_name):

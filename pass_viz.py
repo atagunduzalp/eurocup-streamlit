@@ -1,10 +1,5 @@
-from statsbombpy import sb
-import pandas as pd
+
 import streamlit as st
-
-from mplsoccer import Pitch, Sbopen
-from mplsoccer import VerticalPitch,Pitch
-
 import matplotlib.pyplot as plt
 
 def draw_pass_xg(your_dict):
