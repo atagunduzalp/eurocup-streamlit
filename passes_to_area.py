@@ -10,11 +10,6 @@ from matplotlib import cm
 def get_passes(match_id_list, player_name):
     print(player_name)
     print(match_id_list)
-    # Load events for a match
-    # events = sb.events(match_id=match_id)
-
-    # Filter for passes made by Messi
-    # passes = events[(events['type'] == 'Pass') & (events['player'] == player_name)]
 
     all_passes = pd.DataFrame()
 
@@ -48,18 +43,22 @@ def calculate_area_percentages(passes, player_name):
                      pd.cut(passes['y_end'], bins_y, labels=False, include_lowest=True) * 3
 
     # Calculate the percentage of passes in each area
-    area_counts = passes['area'].value_counts(normalize=True).sort_index() * 100
+    # area_counts = passes['area'].value_counts(normalize=True).sort_index() * 100
 
-    plot_area_percentages(area_counts, bins_x, bins_y, player_name)
+    area_counts = passes['area'].value_counts().sort_index()
+    total_passes = area_counts.sum()
+    area_percentages = area_counts / total_passes * 100
+
+    plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_name)
     return area_counts, bins_x, bins_y
 
 
-def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
+def plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_name):
     # Create a football pitch
     pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white', stripe=False)
     fig, ax = pitch.draw(figsize=(12, 8))
 
-    norm = plt.Normalize(area_counts.min(), area_counts.max())
+    norm = plt.Normalize(area_percentages.min(), area_percentages.max())
 
     # Create a colormap (single color gradient)
     cmap = cm.coolwarm
@@ -75,12 +74,15 @@ def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
     for i in range(3):
         for j in range(4):
             area_index = i + j * 3
-            if area_index in area_counts.index:
-                percentage = area_counts[area_index]
+            if area_index in area_percentages.index:
+                percentage = area_percentages[area_index]
+                count = area_counts[area_index]
                 color = cmap(norm(percentage))
             else:
                 percentage = 0.0
+                count = 0
                 color = 'none'
+
             x_left = bins_x[i]
             x_right = bins_x[i + 1]
             y_bottom = bins_y[j]
@@ -94,15 +96,14 @@ def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
             ax.add_patch(rect)
 
             # Annotate the percentage inside the rectangle
-            pitch.annotate(f'{percentage:.1f}%', xy=(x_center, y_center), ax=ax, fontsize=15, ha='center', va='center',
-                           color='black', zorder=3)
+
+            pitch.annotate(f'{percentage:.1f}%\n({count})', xy=(x_center, y_center), ax=ax, fontsize=12, ha='center',
+                           va='center', color='black', zorder=3)
 
             ax.annotate('Attack', xy=(50, 100), xytext=(50, 110),
                         arrowprops=dict(facecolor='red', shrink=0.05),
                         fontsize=12, ha='center')
-        # Plot arrows for each pass
 
-        # Add an arrow to indicate the direction of the attack
     print('plt: ' +str(player_name))
     plt.title(f'Percentage of Passes Received in Each Area\n{player_name}'
               '→ Attack Direction', fontsize=16, ha='center', va='center')
@@ -111,7 +112,6 @@ def plot_area_percentages(area_counts, bins_x, bins_y, player_name):
                 fontsize=12, ha='center', va='center', zorder=4)
     plt.tight_layout()
 
-    # plt.title('Percentage of Passes Received in Each Area')
     plt.show()
     st.pyplot(plt.gcf())
 

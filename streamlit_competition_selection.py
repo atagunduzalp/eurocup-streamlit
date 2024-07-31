@@ -68,7 +68,6 @@ def select_team_form():
         st.rerun()
 
 
-# def select_player(competition_id, season_id, team):
 def select_player(match_id_list):
     all_matches = sb.matches(competition_id=st.session_state.competition_id_input,
                              season_id=st.session_state.season_id_input)
@@ -81,22 +80,18 @@ def select_player(match_id_list):
 
         match_id_list.append(match)
 
-    # all_matches = sb.matches(competition_id=competition_id, season_id=season_id)
-    # team_matches = all_matches[(all_matches['home_team'] == team) | (
-    #             all_matches['away_team'] == team)]
-
     player_set = set()
     for match in team_matches['match_id']:
         events = sb.events(match_id=match)
         team_events = events[events['team'] == st.session_state.selection]
-        players = team_events['player'].unique()
+        players = team_events['player'].dropna().unique()
         for player in players:
             if player not in player_set:
                 player_set.add(player)
     print(player_set)
     with st.form(key='select_a_player_form'):
-        # sorted_player_list = sorted(player_set)
-        player_selection = st.selectbox("Select a player:", player_set)
+        sorted_player_set = sorted(player_set)
+        player_selection = st.selectbox("Select a player:", sorted_player_set)
         submit_selection_button = st.form_submit_button("Submit Selection")
     if submit_selection_button:
         st.session_state.player = player_selection
@@ -133,7 +128,6 @@ def main(selection):
             pass_to_xg.country_pass_to_xg_result()
 
     elif selection == "Player Passes":
-        player_set = set()
         st.title("Player Passes")
         initialize_session_state()
         if st.session_state.step == 1:
