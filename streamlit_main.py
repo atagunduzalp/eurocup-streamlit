@@ -6,7 +6,8 @@ def menu_selection():
     pages = {
         "Home": "Welcome Here!",
         "Pass to xG": "Passes to create a xG!",
-        "Player Passes": "Player's passes analysis"
+        "Player Passes": "Player's passes analysis",
+        "Player Key Passes": "Player's passes to converted into shots analysis"
     }
 
     # Create a sidebar with a clickable list
@@ -21,7 +22,7 @@ def menu_selection():
 
     if selection == "Pass to xG":
         streamlit_competition_selection.main(selection)
-    elif selection == "Player Passes":
+    elif selection == "Player Passes" or selection == "Player Key Passes":
         streamlit_competition_selection.main(selection)
         # all_passes_on_the_pitch.start()
 

@@ -1,7 +1,6 @@
 from statsbombpy import sb
 import streamlit as st
-import pass_to_xg
-import passes_to_area
+import passes_to_area, key_passes, pass_to_xg
 
 
 match_id_list = []
@@ -127,7 +126,7 @@ def main(selection):
 
             pass_to_xg.country_pass_to_xg_result()
 
-    elif selection == "Player Passes":
+    elif selection == "Player Passes" or selection == "Player Key Passes" :
         st.title("Player Passes")
         initialize_session_state()
         if st.session_state.step == 1:
@@ -142,7 +141,10 @@ def main(selection):
             st.write(f"You selected team: {st.session_state.selection}")
             st.write(f"You selected player: {st.session_state.player}")
             # all_passes_on_the_pitch.start(st.session_state.player, match_id_list, matches_dict)
-            passes_to_area.get_passes(match_id_list, st.session_state.player)
+            if selection == "Player Passes":
+                passes_to_area.get_passes(match_id_list, st.session_state.player)
+            elif selection == "Player Key Passes":
+                key_passes.key_passes_method(match_id_list, st.session_state.player)
 
     reset_button()
 
