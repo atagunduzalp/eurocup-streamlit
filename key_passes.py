@@ -27,7 +27,7 @@ def key_passes_method(team_matches, player):
         pass_to_create_xg = pass_to_create_xg[pass_to_create_xg['player_y'] == player]
         player_passes = player_passes._append(pass_to_create_xg, ignore_index=True)
 
-    if player_passes.empty or not (player_passes['shot_outcome'] == 'Goal').any():
+    if player_passes.empty:
         st.error(f"No key passes that resulted in a shot were found for {player}.")
         return
     show_key_passes_on_the_pitch(player_passes, player)
