@@ -2,11 +2,6 @@ from statsbombpy import sb
 import streamlit as st
 import passes_to_area, key_passes, pass_to_xg
 
-
-match_id_list = []
-matches_dict = {}
-
-
 # def league_infos():
     # st.text("Bundesliga 2015/2016 --> competition id: 9, season id:27")
     # st.text("La Liga 2015/2016 --> competition id: 11, season id:27")
@@ -23,6 +18,8 @@ def initialize_session_state():
         st.session_state.selection = ''
     if 'player' not in st.session_state:
         st.session_state.player = ''
+    if 'match_id_list' not in st.session_state:
+        st.session_state.match_id_list = []
 
 
 def user_input_form():
@@ -30,33 +27,20 @@ def user_input_form():
         league_list = ['Euro Cup 2024', 'Copa America 2024']
 
         league_selection = st.selectbox("Select a competition:", league_list)
-        # competition_id_input = st.number_input("competition id: ", value=55)
-        # season_id_input = st.number_input("season id: ", value=282)
         competition_submitted = st.form_submit_button("Submit competition")
 
     if competition_submitted:
-        if league_selection == 'Euro Cup 2024':
-            st.session_state.competition_id_input = 55
-            st.session_state.season_id_input = 282
-            st.session_state.step = 2
-        elif league_selection == 'Copa America 2024':
-            st.session_state.competition_id_input = 223
-            st.session_state.season_id_input = 282
-            st.session_state.step = 2
+        comp_id, season_id = (55, 282) if league_selection == 'Euro Cup 2024' else (223, 282)
+        st.session_state.competition_id_input = comp_id
+        st.session_state.season_id_input = season_id
+        st.session_state.step = 2
         st.rerun()
 
 
 def select_team_form():
     all_matches = sb.matches(competition_id=st.session_state.competition_id_input,
                              season_id=st.session_state.season_id_input)
-    team_set = set()
-    home_teams = all_matches['home_team'].unique()
-    team_set.add("All")
-    for team in home_teams:
-        team_set.add(team)
-    away_teams = all_matches['away_team'].unique()
-    for team in away_teams:
-        team_set.add(team)
+    team_set = set(all_matches['home_team'].unique()) | set(all_matches['away_team'].unique())
 
     with st.form(key='selection_form'):
         team_name = st.selectbox("Select an option:", sorted(team_set))
@@ -67,36 +51,31 @@ def select_team_form():
         st.rerun()
 
 
-def select_player(match_id_list):
+def select_player():
     all_matches = sb.matches(competition_id=st.session_state.competition_id_input,
                              season_id=st.session_state.season_id_input)
-    team_matches = all_matches[(all_matches['home_team'] == st.session_state.selection) | (all_matches['away_team'] == st.session_state.selection)]
-    for match in team_matches['match_id']:
-        home_team = team_matches[team_matches['match_id'] == match]['home_team']
-        away_team = team_matches[team_matches['match_id'] == match]['away_team']
-        matches_dict[match] = home_team.iloc[0] + " - " + away_team.iloc[0]
-
-        match_id_list.append(match)
+    team_matches = all_matches[(all_matches['home_team'] == st.session_state.selection) | (
+                all_matches['away_team'] == st.session_state.selection)]
 
     player_set = set()
-    for match in team_matches['match_id']:
-        events = sb.events(match_id=match)
+    for match_id in team_matches['match_id']:
+        events = sb.events(match_id=match_id)
         team_events = events[events['team'] == st.session_state.selection]
         players = team_events['player'].dropna().unique()
-        for player in players:
-            if player not in player_set:
-                player_set.add(player)
-    print(player_set)
+        player_set.update(players)
+        if match_id not in st.session_state.match_id_list:
+            st.session_state.match_id_list.append(match_id)
+            # st.session_state.matches_dict[match_id] = f"{events.iloc[0]['home_team']} - {events.iloc[0]['away_team']}"
+
     with st.form(key='select_a_player_form'):
         sorted_player_set = sorted(player_set)
         player_selection = st.selectbox("Select a player:", sorted_player_set)
         submit_selection_button = st.form_submit_button("Submit Selection")
+
     if submit_selection_button:
         st.session_state.player = player_selection
         st.session_state.step = 4
         st.rerun()
-
-    return match_id_list, matches_dict
 
 
 def reset_button():
@@ -104,11 +83,12 @@ def reset_button():
         st.session_state.step = 1
         st.session_state.user_input = ''
         st.session_state.selection = ''
+        st.session_state.match_id_list = []
+        # st.session_state.matches_dict = {}
         st.rerun()
 
 
 def main(selection):
-
     if selection == "Pass to xG":
         st.title("Pass & Xg Creation Chart")
         initialize_session_state()
@@ -117,11 +97,8 @@ def main(selection):
         elif st.session_state.step == 2:
             select_team_form()
         elif st.session_state.step == 3:
-            st.write(f"You selected: {st.session_state.selection}")
-
             pass_to_xg.country_pass_to_xg_result()
-
-    elif selection == "Player Passes" or selection == "Player Key Passes":
+    elif selection in ["Player Passes", "Player Key Passes"]:
         st.title("Player Passes")
         initialize_session_state()
         if st.session_state.step == 1:
@@ -129,15 +106,15 @@ def main(selection):
         elif st.session_state.step == 2:
             select_team_form()
         elif st.session_state.step == 3:
-            select_player(match_id_list)
+            select_player()
         elif st.session_state.step == 4:
             st.write(f"You selected team: {st.session_state.selection}")
             st.write(f"You selected player: {st.session_state.player}")
-            # all_passes_on_the_pitch.start(st.session_state.player, match_id_list, matches_dict)
+            # Conditionally run functions based on the type of analysis selected
             if selection == "Player Passes":
-                passes_to_area.get_passes(match_id_list, st.session_state.player)
+                passes_to_area.get_passes(st.session_state.match_id_list, st.session_state.player)
             elif selection == "Player Key Passes":
-                key_passes.key_passes_method(match_id_list, st.session_state.player)
+                key_passes.key_passes_method(st.session_state.match_id_list, st.session_state.player)
 
     reset_button()
 

@@ -11,8 +11,6 @@ def get_passes(match_id_list, player_name):
     # print(player_name)
     # print(match_id_list)
 
-    st.write(f"match id lists: {match_id_list}")
-
     all_passes = pd.DataFrame()
 
     for match in match_id_list:
@@ -24,6 +22,7 @@ def get_passes(match_id_list, player_name):
         all_passes = pd.concat([all_passes, successful_passes])
         # match_passes_dict[match] = all_passes
     calculate_area_percentages(all_passes, player_name)
+
 
 def calculate_area_percentages(all_passes, player_name):
     # Divide the pitch into 12 equal areas (3 vertical x 4 horizontal)
@@ -103,7 +102,6 @@ def plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_
                         arrowprops=dict(facecolor='red', shrink=0.05),
                         fontsize=12, ha='center')
 
-    print('plt: ' +str(player_name))
     plt.title(f'Percentage of Passes Received in Each Area\n{player_name}'
               '→ Attack Direction', fontsize=16, ha='center', va='center')
     ax.annotate('', xy=(120, 40), xytext=(0, 40),
@@ -118,7 +116,7 @@ def plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_
 # Example usage
 # match_id = 3942382  # Replace with the match ID you are interested in
 # player_name_local = 'Arda Güler'  # Replace with the player name you are interested in
-#
+# #
 # match_id_list  =[]
 # all_matches = sb.matches(competition_id=55,
 #                              season_id=282)
