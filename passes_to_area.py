@@ -8,8 +8,10 @@ from matplotlib import cm
 
 
 def get_passes(match_id_list, player_name):
-    print(player_name)
-    print(match_id_list)
+    # print(player_name)
+    # print(match_id_list)
+
+    st.write(f"match id lists: {match_id_list}")
 
     all_passes = pd.DataFrame()
 
@@ -22,35 +24,32 @@ def get_passes(match_id_list, player_name):
         all_passes = pd.concat([all_passes, successful_passes])
         # match_passes_dict[match] = all_passes
     calculate_area_percentages(all_passes, player_name)
-    return all_passes
-    # return passes
 
-def calculate_area_percentages(passes, player_name):
+def calculate_area_percentages(all_passes, player_name):
     # Divide the pitch into 12 equal areas (3 vertical x 4 horizontal)
     pitch_length = 120
     pitch_width = 80
 
     # Extract end locations of the passes
-    pass_end_location = pd.DataFrame(passes['pass_end_location'].tolist(), index=passes.index,
+    pass_end_location = pd.DataFrame(all_passes['pass_end_location'].tolist(), index=all_passes.index,
                                      columns=['x_end', 'y_end'])
-    passes = pd.concat([passes, pass_end_location], axis=1)
+    all_passes = pd.concat([all_passes, pass_end_location], axis=1)
 
     # Determine which area each pass ends in
     bins_x = np.linspace(0, pitch_length, 4)  # 3 vertical divisions
     bins_y = np.linspace(0, pitch_width, 5)  # 4 horizontal divisions
 
-    passes['area'] = pd.cut(passes['x_end'], bins_x, labels=False, include_lowest=True) + \
-                     pd.cut(passes['y_end'], bins_y, labels=False, include_lowest=True) * 3
+    all_passes['area'] = pd.cut(all_passes['x_end'], bins_x, labels=False, include_lowest=True) + \
+                     pd.cut(all_passes['y_end'], bins_y, labels=False, include_lowest=True) * 3
 
     # Calculate the percentage of passes in each area
     # area_counts = passes['area'].value_counts(normalize=True).sort_index() * 100
 
-    area_counts = passes['area'].value_counts().sort_index()
+    area_counts = all_passes['area'].value_counts().sort_index()
     total_passes = area_counts.sum()
     area_percentages = area_counts / total_passes * 100
 
     plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_name)
-    return area_counts, bins_x, bins_y
 
 
 def plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_name):
@@ -67,8 +66,8 @@ def plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_
     sorted_areas = area_counts.sort_values()
 
     # Identify best 3 and worst 3 areas
-    best_3 = sorted_areas[-4:].index
-    worst_3 = sorted_areas[:4].index
+    # best_3 = sorted_areas[-4:].index
+    # worst_3 = sorted_areas[:4].index
 
     # Plot areas and their percentages
     for i in range(3):
@@ -118,17 +117,17 @@ def plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_
 
 # Example usage
 # match_id = 3942382  # Replace with the match ID you are interested in
-# player_name = 'Arda Güler'  # Replace with the player name you are interested in
+player_name_local = 'Arda Güler'  # Replace with the player name you are interested in
 
-# match_id_list  =[]
-# all_matches = sb.matches(competition_id=55,
-#                              season_id=282)
-# team_matches = all_matches[(all_matches['home_team'] == 'Turkey') | (all_matches['away_team'] == 'Turkey')]
-# for match_id in team_matches['match_id']:
-#     match_id_list.append(match_id)
-# passes = get_passes(match_id_list, player_name)
-#
-# area_counts, bins_x, bins_y = calculate_area_percentages(passes)
+match_id_list  =[]
+all_matches = sb.matches(competition_id=55,
+                             season_id=282)
+team_matches = all_matches[(all_matches['home_team'] == 'Turkey') | (all_matches['away_team'] == 'Turkey')]
+for match_id in team_matches['match_id']:
+    match_id_list.append(match_id)
+get_passes(match_id_list, player_name_local)
+
+# area_counts, bins_x, bins_y = calculate_area_percentages(passes, player_name)
 # plot_area_percentages(area_counts, bins_x, bins_y)
 
 

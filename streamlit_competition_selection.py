@@ -70,7 +70,6 @@ def select_team_form():
 def select_player(match_id_list):
     all_matches = sb.matches(competition_id=st.session_state.competition_id_input,
                              season_id=st.session_state.season_id_input)
-    print(st.session_state.selection)
     team_matches = all_matches[(all_matches['home_team'] == st.session_state.selection) | (all_matches['away_team'] == st.session_state.selection)]
     for match in team_matches['match_id']:
         home_team = team_matches[team_matches['match_id'] == match]['home_team']
@@ -109,7 +108,6 @@ def reset_button():
 
 
 def main(selection):
-    # league_infos()
 
     if selection == "Pass to xG":
         st.title("Pass & Xg Creation Chart")
@@ -119,14 +117,11 @@ def main(selection):
         elif st.session_state.step == 2:
             select_team_form()
         elif st.session_state.step == 3:
-
-            st.write(f"You competition id: {st.session_state.competition_id_input}")
-            st.write(f"You season id: {st.session_state.season_id_input}")
             st.write(f"You selected: {st.session_state.selection}")
 
             pass_to_xg.country_pass_to_xg_result()
 
-    elif selection == "Player Passes" or selection == "Player Key Passes" :
+    elif selection == "Player Passes" or selection == "Player Key Passes":
         st.title("Player Passes")
         initialize_session_state()
         if st.session_state.step == 1:
@@ -136,8 +131,6 @@ def main(selection):
         elif st.session_state.step == 3:
             select_player(match_id_list)
         elif st.session_state.step == 4:
-            st.write(f"You competition id: {st.session_state.competition_id_input}")
-            st.write(f"You season id: {st.session_state.season_id_input}")
             st.write(f"You selected team: {st.session_state.selection}")
             st.write(f"You selected player: {st.session_state.player}")
             # all_passes_on_the_pitch.start(st.session_state.player, match_id_list, matches_dict)
