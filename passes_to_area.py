@@ -117,15 +117,15 @@ def plot_area_percentages(area_counts, area_percentages, bins_x, bins_y, player_
 
 # Example usage
 # match_id = 3942382  # Replace with the match ID you are interested in
-player_name_local = 'Arda Güler'  # Replace with the player name you are interested in
-
-match_id_list  =[]
-all_matches = sb.matches(competition_id=55,
-                             season_id=282)
-team_matches = all_matches[(all_matches['home_team'] == 'Turkey') | (all_matches['away_team'] == 'Turkey')]
-for match_id in team_matches['match_id']:
-    match_id_list.append(match_id)
-get_passes(match_id_list, player_name_local)
+# player_name_local = 'Arda Güler'  # Replace with the player name you are interested in
+#
+# match_id_list  =[]
+# all_matches = sb.matches(competition_id=55,
+#                              season_id=282)
+# team_matches = all_matches[(all_matches['home_team'] == 'Turkey') | (all_matches['away_team'] == 'Turkey')]
+# for match_id in team_matches['match_id']:
+#     match_id_list.append(match_id)
+# get_passes(match_id_list, player_name_local)
 
 # area_counts, bins_x, bins_y = calculate_area_percentages(passes, player_name)
 # plot_area_percentages(area_counts, bins_x, bins_y)
