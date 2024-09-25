@@ -1,6 +1,6 @@
 from statsbombpy import sb
 import streamlit as st
-import passes_to_area, key_passes, pass_to_xg
+import passes_to_area, key_passes, pass_to_xg, avg_positions_heatmap
 
 # def league_infos():
     # st.text("Bundesliga 2015/2016 --> competition id: 9, season id:27")
@@ -98,6 +98,15 @@ def main(selection):
             select_team_form()
         elif st.session_state.step == 3:
             pass_to_xg.country_pass_to_xg_result()
+    elif selection == "Heat Map and Average Positions":
+        st.title("Heat Map and Average Positions")
+        initialize_session_state()
+        if st.session_state.step == 1:
+            user_input_form()
+        elif st.session_state.step == 2:
+            select_team_form()
+        elif st.session_state.step == 3:
+            avg_positions_heatmap.avg_positions(st.session_state.selection)
     elif selection in ["Player Passes", "Player Key Passes"]:
         st.title("Player Passes")
         initialize_session_state()
